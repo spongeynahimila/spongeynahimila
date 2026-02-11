@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Be My Valentine?</title>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script&display=swap" rel="stylesheet">
+<style>
+body {
+  margin: 0;
+  font-family: 'Pacifico', cursive;
+  text-align: center;
+  overflow-x: hidden;
+  background: radial-gradient(circle at center, #ffdce6 0%, #ffc2d1 40%, #ffb3c6 70%, #ff99ac 100%);
+  position: relative;
+}
+
+/* Heading */
+h1 {
+  font-family: 'Pacifico', cursive;
+  font-size: 2.5em;
+  margin-bottom: 40px;
+  color: white;
+  text-shadow: 1px 1px 0 black, -2px 2px 0 black, 2px -2px 0 black, -2px -2px 0 black;
+}
+
+/* Letter */
+.letter {
+  max-width: 600px;
+  margin: 30px auto;
+  padding: 50px 50px 40px 50px;
+  background: #fff8e7;
+  border: 3px solid #ffb6c1;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  color: #5a3e36;
+  font-family: 'Dancing Script', cursive;
+  font-size: 1.4em;
+  line-height: 1.4;
+  position: relative;
+  backdrop-filter: blur(5px);
+  white-space: pre-line;
+  display: none;
+}
+
+/* Notebook left vertical line */
+.letter::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 20px;
+  width: 2px;
+  height: 100%;
+  background: #ffb6c1;
+}
+
+/* Notebook top horizontal line moved lower */
+.letter::after {
+  content: "";
+  position: absolute;
+  top: 50px; /* moved lower */
+  left: 20px;
+  width: calc(100% - 40px);
+  height: 2px;
+  background: #ffb6c1;
+}
+
+/* Letter lines */
+.letter .line {
+  border-bottom: 1px solid #ffb6c1;
+  padding-left: 20px;
+  margin-bottom: 8px;
+  min-height: 1.5em;
+}
+
+/* Images centered above buttons */
+.images {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.images img {
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  height: auto; /* preserve aspect ratio */
+  max-width: 100%; 
+}
+
+/* Buttons */
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+button {
+  padding: 15px 35px;
+  font-size: 18px;
+  border: none;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  min-width: 140px;
+  color: white;
+}
+
+.green, .red {
+  box-shadow: 0 0 15px rgba(255,255,255,0.4), 0 0 30px rgba(255,255,255,0.2);
+}
+
+.green {
+  background: linear-gradient(135deg, #a8e6cf, #56c596);
+  animation: pulse 2.5s infinite;
+}
+
+.red {
+  background: linear-gradient(135deg, #ffb3c6, #ff6f91);
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+  100% { transform: scale(1); }
+}
+
+/* Heart emojis */
+.heart {
+  position: fixed;
+  font-size: 20px;
+  pointer-events: none;
+  opacity: 0;
+  transform: scale(0);
+  animation: heartFadeIn 1.5s forwards, heartShake 1s infinite alternate;
+}
+
+@keyframes heartFadeIn {
+  0% { opacity: 0; transform: scale(0); }
+  50% { opacity: 1; transform: scale(1.3); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes heartFadeOut {
+  from { opacity: 1; transform: scale(1); }
+  to { opacity: 0; transform: scale(0); }
+}
+
+@keyframes heartShake {
+  0% { transform: scale(1) rotate(-5deg); }
+  50% { transform: scale(1) rotate(5deg); }
+  100% { transform: scale(1) rotate(-5deg); }
+}
+
+/* Confetti */
+.confetti {
+  position: fixed;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  opacity: 1;
+  z-index: 1000;
+  animation: confettiFall 2s linear forwards;
+}
+
+@keyframes confettiFall {
+  to { transform: translate(var(--dx,0), var(--dy,0)) rotate(360deg); opacity:0; }
+}
+</style>
+</head>
+<body>
+
+<audio id="bgMusic" autoplay loop>
+  <source src="song.mp3" type="audio/mpeg">
+</audio>
+
+<div class="container">
+  <h1 id="mainText">Will you be my Valentine cutie 💖</h1>
+
+  <div id="letterContainer">
+    <div class="letter">
+      <div class="line">My pretty little baby</div>
+      <div class="line">Dating you has made me the luckiest and happiest</div>
+      <div class="line">Man in the world</div>
+      <div class="line">I hope I get to see so many more Valentine's days with you</div>
+      <div class="line">And I hope you call me your man on every single one of them</div>
+    </div>
+  </div>
+
+  <div class="images">
+    <img id="greenImage" src="gato1.jpg" alt="Image 1">
+    <img id="redImage" src="gato2.jpg" alt="Image 2">
+  </div>
+
+  <div class="buttons">
+    <button class="green" id="yesBtn">YESSSSSSS 💚</button>
+    <button class="red" id="noBtn">no 😢😢😢</button>
+  </div>
+</div>
+
+<script>
+// Play music once on click
+document.addEventListener("click",()=>document.getElementById("bgMusic").play(),{once:true});
+
+const yesBtn=document.getElementById("yesBtn");
+const noBtn=document.getElementById("noBtn");
+const heading=document.getElementById("mainText");
+const letter=document.querySelector(".letter");
+const images=document.querySelector(".images");
+
+let noClickCount=0;
+const messages=[
+  "wrong button silly 🥺",
+  "babi the green one ",
+  "babi.....",
+  "rana istg 😡😡",
+  "okai fak u, you have no choice now",
+  "ranoora....",
+  "okai fak u, you have no choice now"
+];
+
+// Resize images to match buttons dynamically
+function resizeImages() {
+  const buttonWidth = yesBtn.offsetWidth;
+  images.querySelectorAll('img').forEach(img=>{
+    img.style.width = buttonWidth + 'px';
+    img.style.height = 'auto';
+  });
+}
+window.addEventListener('resize', resizeImages);
+resizeImages();
+
+// Hearts
+let hearts=[];
+let heartsInterval;
+
+function createHeartEmoji(){
+  const heart=document.createElement("div");
+  heart.className="heart";
+  heart.innerText="❤️";
+
+  const padding=50;
+  const forbiddenRects=[
+    heading.getBoundingClientRect(),
+    letter.getBoundingClientRect(),
+    yesBtn.getBoundingClientRect(),
+    noBtn.getBoundingClientRect()
+  ];
+
+  let x,y,valid=false;
+  let attempts=0;
+  while(!valid && attempts<20){
+    attempts++;
+    x=Math.random()*(window.innerWidth-20);
+    y=Math.random()*(window.innerHeight-20);
+    valid=true;
+    for(let f of forbiddenRects){
+      if(x+20>f.left-padding && x<f.right+padding && y+20>f.top-padding && y<f.bottom+padding) valid=false;
+    }
+    for(let h of hearts){
+      const dx=x-h.x, dy=y-h.y;
+      if(Math.sqrt(dx*dx+dy*dy)<30) valid=false;
+    }
+  }
+  if(!valid) return;
+
+  heart.style.left=x+"px";
+  heart.style.top=y+"px";
+
+  document.body.appendChild(heart);
+  hearts.push({x,y,el:heart});
+
+  setTimeout(()=>{
+    heart.style.animation=`heartFadeOut 2s forwards`;
+    setTimeout(()=>{heart.remove(); hearts.shift();},2000);
+  },3000);
+}
+
+heartsInterval=setInterval(createHeartEmoji,400);
+
+// YES button
+yesBtn.onclick=function(){
+  images.style.display="none";
+  yesBtn.style.display="none";
+  noBtn.style.display="none";
+
+  heading.innerText="Yayyyyyyy, you're my Valentine 🥰🥰🥰";
+  letter.style.display="block";
+
+  // Stop hearts
+  clearInterval(heartsInterval);
+  hearts.forEach(h=>{
+    h.el.style.animation=`heartFadeOut 2s forwards`;
+    setTimeout(()=>h.el.remove(),2000);
+  });
+  hearts=[];
+
+  const letterRect=letter.getBoundingClientRect();
+  for(let i=0;i<200;i++){
+    const c=document.createElement("div");
+    c.className="confetti";
+    c.style.background=`hsl(${Math.random()*360},70%,70%)`;
+    c.style.width=6+Math.random()*4+"px";
+    c.style.height=6+Math.random()*4+"px";
+
+    const fromLeft=Math.random()<0.5;
+    const spawnX=fromLeft?-20:window.innerWidth+20;
+    const spawnY=letterRect.top+Math.random()*20;
+
+    c.style.left=spawnX+"px";
+    c.style.top=spawnY+"px";
+
+    const targetX=letterRect.left+Math.random()*letterRect.width;
+    const targetY=letterRect.top+Math.random()*letterRect.height;
+
+    const dx=targetX-spawnX;
+    const dy=targetY-spawnY;
+
+    c.style.setProperty("--dx",dx+"px");
+    c.style.setProperty("--dy",dy+"px");
+
+    document.body.appendChild(c);
+    setTimeout(()=>c.remove(),2000);
+  }
+};
+
+// NO button shrink
+noBtn.onclick=function(){
+  noClickCount++;
+  if(noClickCount<messages.length) heading.innerText=messages[noClickCount-1];
+  noBtn.style.transform=`scale(${0.85**noClickCount})`;
+  if(noClickCount>=5) noBtn.style.display="none";
+};
+</script>
+</body>
+</html>
