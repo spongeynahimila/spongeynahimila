@@ -8,42 +8,40 @@
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
 
 <style>
-body{
+html,body{
   margin:0;
+  padding:0;
+  min-height:100vh;
+  overflow-x:hidden;
+}
+
+body{
   font-family:'Pacifico',cursive;
   text-align:center;
-  background: radial-gradient(circle at center,#ffdce6 0%,#ffc2d1 40%,#ffb3c6 70%,#ff99ac 100%);
-  overflow:hidden;
   color:white;
+  background: linear-gradient(180deg,#ffdce6 0%,#ffc2d1 40%,#ffb3c6 70%,#ff99ac 100%);
+  background-attachment: fixed;
+  transition: background 1.5s ease;
+}
+
+body.glow{
+  background: linear-gradient(180deg,#ffe6f0 0%,#ffcce0 50%,#ff99bb 100%);
 }
 
 h1{
   margin-top:40px;
-  font-size:2.3em;
-  text-shadow:2px 2px 4px rgba(0,0,0,0.5);
+  font-size:2.2em;
+  padding:0 15px;
+  text-shadow:2px 2px 6px rgba(0,0,0,0.4);
 }
 
-/* Letter */
-.letter{
-  max-width:600px;
-  margin:30px auto;
-  padding:40px;
-  background:#fff8e7;
-  border-radius:20px;
-  box-shadow:0 15px 35px rgba(0,0,0,0.2);
-  font-family:'Dancing Script',cursive;
-  font-size:1.6em;
-  color:#5a3e36;
-  line-height:1.6;
-  display:none;
-}
-
-/* Choices layout */
+/* Layout */
 .choices{
   display:flex;
   justify-content:center;
   gap:40px;
-  margin-top:40px;
+  margin:50px 0;
+  position:relative;
 }
 
 .choice{
@@ -65,7 +63,7 @@ button{
   border:none;
   border-radius:50px;
   cursor:pointer;
-  transition:0.3s ease;
+  transition:0.25s ease;
   color:white;
   min-width:150px;
 }
@@ -77,11 +75,60 @@ button{
 
 .red{
   background:linear-gradient(135deg,#ffb3c6,#ff6f91);
-  position:relative;
 }
 
-button:hover{
-  transform:scale(1.08);
+/* Letter */
+.letter{
+  max-width:600px;
+  margin:40px auto 80px auto;
+  padding:40px;
+  background:#fff8e7;
+  border-radius:20px;
+  box-shadow:0 15px 40px rgba(0,0,0,0.3);
+  font-family:'Dancing Script',cursive;
+  font-size:1.6em;
+  color:#5a3e36;
+  line-height:1.6;
+  opacity:0;
+  transform:translateY(40px) scale(0.95);
+  transition:all 1.2s ease;
+  display:none;
+}
+
+.letter.show{
+  opacity:1;
+  transform:translateY(0) scale(1);
+}
+
+/* Loading Bar */
+.loader-container{
+  width:70%;
+  max-width:400px;
+  height:25px;
+  background:white;
+  border-radius:50px;
+  margin:30px auto;
+  overflow:hidden;
+  display:none;
+  box-shadow:0 5px 15px rgba(0,0,0,0.2);
+}
+
+.loader-bar{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#ff6f91,#ffd166,#06d6a0);
+  border-radius:50px;
+  transition:width 0.2s ease;
+}
+
+.loader-pop{
+  animation:pop 0.25s ease;
+}
+
+@keyframes pop{
+  0%{transform:scale(1);}
+  50%{transform:scale(1.08);}
+  100%{transform:scale(1);}
 }
 
 /* Hearts */
@@ -93,8 +140,8 @@ button:hover{
 }
 
 @keyframes float{
-  from{transform:translateY(0) scale(1); opacity:1;}
-  to{transform:translateY(-200px) scale(1.5); opacity:0;}
+  from{transform:translateY(0);opacity:1;}
+  to{transform:translateY(-200px);opacity:0;}
 }
 
 /* Confetti */
@@ -103,25 +150,13 @@ button:hover{
   width:8px;
   height:8px;
   border-radius:50%;
-  animation:fall 2s linear forwards;
-}
-
-@keyframes fall{
-  to{transform:translateY(300px) rotate(360deg); opacity:0;}
 }
 
 /* Mobile */
 @media(max-width:600px){
-  .choices{
-    gap:15px;
-  }
-  .choice img{
-    width:120px;
-  }
-  button{
-    padding:12px 20px;
-    font-size:16px;
-  }
+  .choices{gap:15px;}
+  .choice img{width:120px;}
+  button{padding:12px 20px;font-size:16px;}
 }
 </style>
 </head>
@@ -133,23 +168,26 @@ button:hover{
 
 <h1 id="mainText">Will you be my Valentine cutie 💖</h1>
 
+<div class="choices" id="choices">
+  <div class="choice">
+    <img src="gato1.jpg">
+    <button class="green" id="yesBtn">YES 💚</button>
+  </div>
+  <div class="choice">
+    <img src="gato2.jpg">
+    <button class="red" id="noBtn">no 😢</button>
+  </div>
+</div>
+
+<div class="loader-container" id="loaderContainer">
+  <div class="loader-bar" id="loaderBar"></div>
+</div>
+
 <div class="letter" id="loveLetter">
   My pretty little baby 💕<br><br>
   Dating you has made me the luckiest and happiest man in the world.<br><br>
   I hope I get to see so many more Valentine's days with you.<br><br>
   And I hope you call me your man on every single one of them 💖
-</div>
-
-<div class="choices" id="choices">
-  <div class="choice">
-    <img src="gato1.jpg">
-    <button class="green" id="yesBtn">YESSSSS 💚</button>
-  </div>
-
-  <div class="choice">
-    <img src="gato2.jpg">
-    <button class="red" id="noBtn">no 😢</button>
-  </div>
 </div>
 
 <script>
@@ -158,55 +196,126 @@ const noBtn=document.getElementById("noBtn");
 const letter=document.getElementById("loveLetter");
 const heading=document.getElementById("mainText");
 const choices=document.getElementById("choices");
+const loaderContainer=document.getElementById("loaderContainer");
+const loaderBar=document.getElementById("loaderBar");
 const music=document.getElementById("bgMusic");
+
+const boingSound=new Audio("boing.mp3");
+const yesSound=new Audio("yes-sound.mp3");
 
 document.addEventListener("click",()=>music.play(),{once:true});
 
+let heartInterval;
 let noClicks=0;
 
-/* Floating hearts */
-setInterval(()=>{
-  const heart=document.createElement("div");
-  heart.className="heart";
-  heart.innerText="❤️";
-  heart.style.left=Math.random()*window.innerWidth+"px";
-  heart.style.bottom="0px";
-  document.body.appendChild(heart);
-  setTimeout(()=>heart.remove(),4000);
-},500);
+/* Hearts */
+function startHearts(){
+  heartInterval=setInterval(()=>{
+    const heart=document.createElement("div");
+    heart.className="heart";
+    heart.innerText="❤️";
+    heart.style.left=Math.random()*window.innerWidth+"px";
+    heart.style.bottom="0px";
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),4000);
+  },700);
+}
 
-/* YES button */
-yesBtn.onclick=()=>{
-  heading.innerText="Yayyyyyyy you're mine 🥰🥰🥰";
-  letter.style.display="block";
-  choices.style.display="none";
+function stopHearts(){
+  clearInterval(heartInterval);
+  document.querySelectorAll(".heart").forEach(h=>h.remove());
+}
 
+startHearts();
+
+/* Confetti */
+function fireConfetti(){
+  const colors=["#ff6f91","#ffd166","#06d6a0","#118ab2","#ffb3c6"];
   for(let i=0;i<150;i++){
     const c=document.createElement("div");
     c.className="confetti";
-    c.style.left=Math.random()*window.innerWidth+"px";
-    c.style.top="0px";
-    c.style.background=`hsl(${Math.random()*360},70%,70%)`;
+    c.style.background=colors[Math.floor(Math.random()*colors.length)];
+    let fromLeft=Math.random()<0.5;
+    let x=fromLeft?-10:window.innerWidth+10;
+    let y=window.innerHeight*0.4;
     document.body.appendChild(c);
-    setTimeout(()=>c.remove(),2000);
+    let angle=fromLeft?Math.random()*60-30:180+(Math.random()*60-30);
+    let velocity=7+Math.random()*6;
+    let gravity=0.25;
+    let vx=Math.cos(angle*Math.PI/180)*velocity;
+    let vy=Math.sin(angle*Math.PI/180)*velocity;
+    function animate(){
+      vy+=gravity;
+      x+=vx;
+      y+=vy;
+      c.style.left=x+"px";
+      c.style.top=y+"px";
+      c.style.transform+=" rotate(15deg)";
+      if(y<window.innerHeight+20){
+        requestAnimationFrame(animate);
+      }else{c.remove();}
+    }
+    animate();
   }
+}
+
+/* YES */
+yesBtn.onclick=()=>{
+  heading.innerText="yayyyyyy ur my valentine💖";
+  yesSound.currentTime=0;
+  yesSound.play();
+  stopHearts();
+  choices.style.display="none";
+  document.body.classList.add("glow");
+  loaderContainer.style.display="block";
+
+  let progress=0;
+  const loadInterval=setInterval(()=>{
+    progress+=8;
+    loaderBar.style.width=progress+"%";
+    loaderBar.classList.add("loader-pop");
+    setTimeout(()=>loaderBar.classList.remove("loader-pop"),150);
+
+    if(progress>=100){
+      clearInterval(loadInterval);
+      loaderContainer.style.display="none";
+      letter.style.display="block";
+      setTimeout(()=>letter.classList.add("show"),50);
+      document.body.style.overflowY="auto";
+      fireConfetti();
+    }
+  },150);
 };
 
-/* NO button chaos */
+/* NO */
 noBtn.onclick=()=>{
   noClicks++;
 
-  // YES grows
-  yesBtn.style.transform=`scale(${1+noClicks*0.2})`;
+  const messages=[
+    "wrong button silly 🥺",
+    "babi the green one 💚",
+    "are you serious rn 😭",
+    "stop playing with me 😡",
+    "ok now you have no choice"
+  ];
 
-  // NO runs away after 2 clicks
-  if(noClicks>=2){
-    noBtn.style.position="absolute";
-    noBtn.style.top=Math.random()*70+"%";
-    noBtn.style.left=Math.random()*80+"%";
+  if(noClicks<=messages.length){
+    heading.innerText=messages[noClicks-1];
   }
 
-  if(noClicks>=5){
+  yesBtn.style.transform=`scale(${1+noClicks*0.2})`;
+
+  const shrink=Math.max(0.15,1-noClicks*0.12);
+  noBtn.style.transform=`scale(${shrink})`;
+
+  boingSound.currentTime=0;
+  boingSound.play();
+
+  noBtn.style.position="absolute";
+  noBtn.style.top=Math.random()*75+"%";
+  noBtn.style.left=Math.random()*80+"%";
+
+  if(noClicks>=12){
     noBtn.style.display="none";
   }
 };
