@@ -19,20 +19,40 @@ body{
   font-family:'Pacifico',cursive;
   text-align:center;
   color:white;
-  background: linear-gradient(180deg,#ffdce6 0%,#ffc2d1 40%,#ffb3c6 70%,#ff99ac 100%);
-  background-attachment: fixed;
-  transition: background 1.5s ease;
+  position:relative;
+  background:linear-gradient(180deg,#ffe6ef 0%,#ffc2d1 50%,#ffadc2 100%);
+  background-attachment:fixed;
+  transition:background 1.5s ease;
+}
+
+/* subtle heart pattern */
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background-image:
+    radial-gradient(rgba(255,255,255,0.25) 1px, transparent 1px),
+    radial-gradient(rgba(255,182,193,0.25) 1px, transparent 1px);
+  background-size:40px 40px, 60px 60px;
+  background-position:0 0, 20px 20px;
+  pointer-events:none;
+  z-index:0;
+}
+
+body > *{
+  position:relative;
+  z-index:1;
 }
 
 body.glow{
-  background: linear-gradient(180deg,#ffe6f0 0%,#ffcce0 50%,#ff99bb 100%);
+  background:linear-gradient(180deg,#fff0f6 0%,#ffcce0 60%,#ffb3cc 100%);
 }
 
 h1{
   margin-top:40px;
   font-size:2.2em;
   padding:0 15px;
-  text-shadow:2px 2px 6px rgba(0,0,0,0.4);
+  text-shadow:2px 2px 6px rgba(0,0,0,0.3);
 }
 
 /* Layout */
@@ -52,11 +72,14 @@ h1{
 
 .choice img{
   width:160px;
+  height:160px;
+  object-fit:cover;
   border-radius:20px;
   margin-bottom:15px;
   box-shadow:0 10px 25px rgba(0,0,0,0.25);
 }
 
+/* Buttons */
 button{
   padding:15px 35px;
   font-size:18px;
@@ -74,7 +97,7 @@ button{
 }
 
 .red{
-  background:linear-gradient(135deg,#ffb3c6,#ff6f91);
+  background:linear-gradient(135deg,#ff9bb3,#ff6f91);
 }
 
 /* Letter */
@@ -82,9 +105,9 @@ button{
   max-width:600px;
   margin:40px auto 80px auto;
   padding:40px;
-  background:#fff8e7;
+  background:#fff8f2;
   border-radius:20px;
-  box-shadow:0 15px 40px rgba(0,0,0,0.3);
+  box-shadow:0 15px 40px rgba(0,0,0,0.25);
   font-family:'Dancing Script',cursive;
   font-size:1.6em;
   color:#5a3e36;
@@ -100,25 +123,37 @@ button{
   transform:translateY(0) scale(1);
 }
 
-/* Loading Bar */
+/* Heart Loader */
 .loader-container{
-  width:70%;
-  max-width:400px;
-  height:25px;
-  background:white;
+  width:250px;
+  height:40px;
+  background:#fff0f6;
   border-radius:50px;
   margin:30px auto;
   overflow:hidden;
   display:none;
-  box-shadow:0 5px 15px rgba(0,0,0,0.2);
+  box-shadow:0 5px 15px rgba(0,0,0,0.1);
+  position: relative;
 }
 
 .loader-bar{
   height:100%;
   width:0%;
-  background:linear-gradient(90deg,#ff6f91,#ffd166,#06d6a0);
+  background: repeating-linear-gradient(
+    45deg,
+    #ffb6c1,
+    #ffb6c1 10px,
+    #ffc0cb 10px,
+    #ffc0cb 20px
+  );
   border-radius:50px;
-  transition:width 0.2s ease;
+  transition: width 0.25s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size:1.2em;
+  color:white;
+  font-weight:bold;
 }
 
 .loader-pop{
@@ -127,21 +162,16 @@ button{
 
 @keyframes pop{
   0%{transform:scale(1);}
-  50%{transform:scale(1.08);}
+  50%{transform:scale(1.06);}
   100%{transform:scale(1);}
 }
 
-/* Hearts */
+/* Floating Hearts */
 .heart{
   position:fixed;
-  font-size:20px;
+  font-size:18px;
   pointer-events:none;
-  animation:float 4s linear forwards;
-}
-
-@keyframes float{
-  from{transform:translateY(0);opacity:1;}
-  to{transform:translateY(-200px);opacity:0;}
+  z-index:0;
 }
 
 /* Confetti */
@@ -155,7 +185,10 @@ button{
 /* Mobile */
 @media(max-width:600px){
   .choices{gap:15px;}
-  .choice img{width:120px;}
+  .choice img{
+    width:120px;
+    height:120px;
+  }
   button{padding:12px 20px;font-size:16px;}
 }
 </style>
@@ -201,24 +234,37 @@ const loaderBar=document.getElementById("loaderBar");
 const music=document.getElementById("bgMusic");
 
 const boingSound=new Audio("boing.mp3");
-const yesSound=new Audio("yes-sound.mp3");
+const yesSound=new Audio("yay.mp3");
 
 document.addEventListener("click",()=>music.play(),{once:true});
 
 let heartInterval;
 let noClicks=0;
 
-/* Hearts */
-function startHearts(){
-  heartInterval=setInterval(()=>{
-    const heart=document.createElement("div");
-    heart.className="heart";
-    heart.innerText="❤️";
-    heart.style.left=Math.random()*window.innerWidth+"px";
-    heart.style.bottom="0px";
+/* Floating hearts all over the page */
+function startHearts() {
+  heartInterval = setInterval(() => {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerText = Math.random() > 0.5 ? "🤍" : "💗";
+
+    heart.style.left = Math.random() * window.innerWidth + "px";
+    heart.style.top = Math.random() * window.innerHeight + "px";
+
+    const angle = Math.random() * 2 * Math.PI;
+    const distance = 30 + Math.random() * 50;
+
+    heart.animate(
+      [
+        { transform: "translate(0, 0)", opacity: 0.9 },
+        { transform: `translate(${Math.cos(angle)*distance}px, ${Math.sin(angle)*distance}px)`, opacity: 0 }
+      ],
+      { duration: 4000 + Math.random()*2000, iterations: 1, easing: "ease-out" }
+    );
+
     document.body.appendChild(heart);
-    setTimeout(()=>heart.remove(),4000);
-  },700);
+    setTimeout(()=>heart.remove(),6000);
+  }, 300);
 }
 
 function stopHearts(){
@@ -230,7 +276,7 @@ startHearts();
 
 /* Confetti */
 function fireConfetti(){
-  const colors=["#ff6f91","#ffd166","#06d6a0","#118ab2","#ffb3c6"];
+  const colors=["#ff9bb3","#ffffff","#ffc0cb","#ff6f91"];
   for(let i=0;i<150;i++){
     const c=document.createElement("div");
     c.className="confetti";
@@ -250,7 +296,6 @@ function fireConfetti(){
       y+=vy;
       c.style.left=x+"px";
       c.style.top=y+"px";
-      c.style.transform+=" rotate(15deg)";
       if(y<window.innerHeight+20){
         requestAnimationFrame(animate);
       }else{c.remove();}
@@ -271,8 +316,12 @@ yesBtn.onclick=()=>{
 
   let progress=0;
   const loadInterval=setInterval(()=>{
-    progress+=8;
+    progress+=6;
     loaderBar.style.width=progress+"%";
+
+    const heartCount=Math.floor(progress/10);
+    loaderBar.innerHTML="💖".repeat(heartCount);
+
     loaderBar.classList.add("loader-pop");
     setTimeout(()=>loaderBar.classList.remove("loader-pop"),150);
 
@@ -281,7 +330,6 @@ yesBtn.onclick=()=>{
       loaderContainer.style.display="none";
       letter.style.display="block";
       setTimeout(()=>letter.classList.add("show"),50);
-      document.body.style.overflowY="auto";
       fireConfetti();
     }
   },150);
@@ -294,9 +342,9 @@ noBtn.onclick=()=>{
   const messages=[
     "wrong button silly 🥺",
     "babi the green one 💚",
-    "are you serious rn 😭",
-    "stop playing with me 😡",
-    "ok now you have no choice"
+    "rana.....",
+    "ISTG RANA",
+    "ok fk u press it"
   ];
 
   if(noClicks<=messages.length){
@@ -305,7 +353,7 @@ noBtn.onclick=()=>{
 
   yesBtn.style.transform=`scale(${1+noClicks*0.2})`;
 
-  const shrink=Math.max(0.15,1-noClicks*0.12);
+  const shrink=Math.max(0.1,1-noClicks*0.12);
   noBtn.style.transform=`scale(${shrink})`;
 
   boingSound.currentTime=0;
@@ -315,7 +363,7 @@ noBtn.onclick=()=>{
   noBtn.style.top=Math.random()*75+"%";
   noBtn.style.left=Math.random()*80+"%";
 
-  if(noClicks>=12){
+  if(noClicks===5){
     noBtn.style.display="none";
   }
 };
