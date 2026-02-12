@@ -22,10 +22,10 @@ body{
   position:relative;
   background:linear-gradient(180deg,#ffe6ef 0%,#ffc2d1 50%,#ffadc2 100%);
   background-attachment:fixed;
-  transition:background 1.5s ease;
+  transition:background 1.5s ease, transform 0.1s ease;
 }
 
-/* subtle heart pattern */
+/* dreamy background dots */
 body::before{
   content:"";
   position:fixed;
@@ -48,6 +48,19 @@ body.glow{
   background:linear-gradient(180deg,#fff0f6 0%,#ffcce0 60%,#ffb3cc 100%);
 }
 
+/* camera shake */
+@keyframes shake {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(5px, -5px); }
+  50% { transform: translate(-5px, 5px); }
+  75% { transform: translate(5px, 5px); }
+  100% { transform: translate(0, 0); }
+}
+
+.shake {
+  animation: shake 0.4s ease;
+}
+
 h1{
   margin-top:40px;
   font-size:2.2em;
@@ -55,13 +68,11 @@ h1{
   text-shadow:2px 2px 6px rgba(0,0,0,0.3);
 }
 
-/* Layout */
 .choices{
   display:flex;
   justify-content:center;
   gap:40px;
   margin:50px 0;
-  position:relative;
 }
 
 .choice{
@@ -79,7 +90,6 @@ h1{
   box-shadow:0 10px 25px rgba(0,0,0,0.25);
 }
 
-/* Buttons */
 button{
   padding:15px 35px;
   font-size:18px;
@@ -100,7 +110,6 @@ button{
   background:linear-gradient(135deg,#ff9bb3,#ff6f91);
 }
 
-/* Letter */
 .letter{
   max-width:600px;
   margin:40px auto 80px auto;
@@ -123,50 +132,39 @@ button{
   transform:translateY(0) scale(1);
 }
 
-/* Heart Loader */
+/* CUTER LOADER */
 .loader-container{
-  width:250px;
-  height:40px;
+  width:260px;
+  height:42px;
   background:#fff0f6;
   border-radius:50px;
   margin:30px auto;
   overflow:hidden;
   display:none;
   box-shadow:0 5px 15px rgba(0,0,0,0.1);
-  position: relative;
 }
 
 .loader-bar{
   height:100%;
   width:0%;
-  background: repeating-linear-gradient(
-    45deg,
-    #ffb6c1,
-    #ffb6c1 10px,
-    #ffc0cb 10px,
-    #ffc0cb 20px
-  );
+  background:linear-gradient(90deg,#ffb6c1,#ffc0cb,#ffb6c1);
   border-radius:50px;
   transition: width 0.25s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size:1.2em;
-  color:white;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:1.1em;
   font-weight:bold;
+  white-space:nowrap;
+  overflow:hidden;
+  color:white;
 }
 
-.loader-pop{
-  animation:pop 0.25s ease;
+.loader-bar span{
+  letter-spacing:2px;
 }
 
-@keyframes pop{
-  0%{transform:scale(1);}
-  50%{transform:scale(1.06);}
-  100%{transform:scale(1);}
-}
-
-/* Floating Hearts */
+/* floating hearts */
 .heart{
   position:fixed;
   font-size:18px;
@@ -174,22 +172,12 @@ button{
   z-index:0;
 }
 
-/* Confetti */
+/* confetti */
 .confetti{
   position:fixed;
   width:8px;
   height:8px;
   border-radius:50%;
-}
-
-/* Mobile */
-@media(max-width:600px){
-  .choices{gap:15px;}
-  .choice img{
-    width:120px;
-    height:120px;
-  }
-  button{padding:12px 20px;font-size:16px;}
 }
 </style>
 </head>
@@ -213,7 +201,9 @@ button{
 </div>
 
 <div class="loader-container" id="loaderContainer">
-  <div class="loader-bar" id="loaderBar"></div>
+  <div class="loader-bar" id="loaderBar">
+    <span>💖 💖 💖 💖 💖 💖 💖 💖 💖 💖</span>
+  </div>
 </div>
 
 <div class="letter" id="loveLetter">
@@ -235,64 +225,52 @@ const music=document.getElementById("bgMusic");
 
 const boingSound=new Audio("boing.mp3");
 const yesSound=new Audio("yay.mp3");
+const confettiSound=new Audio("confetti.mp3");
 
 document.addEventListener("click",()=>music.play(),{once:true});
 
-let heartInterval;
-let noClicks=0;
+/* floating hearts */
+setInterval(()=>{
+  const heart=document.createElement("div");
+  heart.className="heart";
+  heart.innerText=Math.random()>0.5?"🤍":"💗";
+  heart.style.left=Math.random()*window.innerWidth+"px";
+  heart.style.top=Math.random()*window.innerHeight+"px";
+  document.body.appendChild(heart);
 
-/* Floating hearts all over the page */
-function startHearts() {
-  heartInterval = setInterval(() => {
-    const heart = document.createElement("div");
-    heart.className = "heart";
-    heart.innerText = Math.random() > 0.5 ? "🤍" : "💗";
+  heart.animate(
+    [
+      {transform:"translate(0,0)",opacity:0.9},
+      {transform:`translate(${Math.random()*60-30}px,-80px)`,opacity:0}
+    ],
+    {duration:5000,easing:"ease-out"}
+  );
 
-    heart.style.left = Math.random() * window.innerWidth + "px";
-    heart.style.top = Math.random() * window.innerHeight + "px";
+  setTimeout(()=>heart.remove(),5000);
+},400);
 
-    const angle = Math.random() * 2 * Math.PI;
-    const distance = 30 + Math.random() * 50;
-
-    heart.animate(
-      [
-        { transform: "translate(0, 0)", opacity: 0.9 },
-        { transform: `translate(${Math.cos(angle)*distance}px, ${Math.sin(angle)*distance}px)`, opacity: 0 }
-      ],
-      { duration: 4000 + Math.random()*2000, iterations: 1, easing: "ease-out" }
-    );
-
-    document.body.appendChild(heart);
-    setTimeout(()=>heart.remove(),6000);
-  }, 300);
+/* camera shake */
+function triggerShake(){
+  document.body.classList.add("shake");
+  setTimeout(()=>document.body.classList.remove("shake"),400);
 }
 
-function stopHearts(){
-  clearInterval(heartInterval);
-  document.querySelectorAll(".heart").forEach(h=>h.remove());
-}
-
-startHearts();
-
-/* Confetti */
+/* confetti */
 function fireConfetti(){
+  confettiSound.currentTime=0;
+  confettiSound.play();
+  triggerShake();
+
   const colors=["#ff9bb3","#ffffff","#ffc0cb","#ff6f91"];
   for(let i=0;i<150;i++){
     const c=document.createElement("div");
     c.className="confetti";
     c.style.background=colors[Math.floor(Math.random()*colors.length)];
-    let fromLeft=Math.random()<0.5;
-    let x=fromLeft?-10:window.innerWidth+10;
-    let y=window.innerHeight*0.4;
+    let x=Math.random()*window.innerWidth;
+    let y=-10;
     document.body.appendChild(c);
-    let angle=fromLeft?Math.random()*60-30:180+(Math.random()*60-30);
-    let velocity=7+Math.random()*6;
-    let gravity=0.25;
-    let vx=Math.cos(angle*Math.PI/180)*velocity;
-    let vy=Math.sin(angle*Math.PI/180)*velocity;
+    let vy=2+Math.random()*4;
     function animate(){
-      vy+=gravity;
-      x+=vx;
       y+=vy;
       c.style.left=x+"px";
       c.style.top=y+"px";
@@ -307,23 +285,15 @@ function fireConfetti(){
 /* YES */
 yesBtn.onclick=()=>{
   heading.innerText="yayyyyyy ur my valentine💖";
-  yesSound.currentTime=0;
   yesSound.play();
-  stopHearts();
   choices.style.display="none";
   document.body.classList.add("glow");
   loaderContainer.style.display="block";
 
   let progress=0;
   const loadInterval=setInterval(()=>{
-    progress+=6;
+    progress+=5;
     loaderBar.style.width=progress+"%";
-
-    const heartCount=Math.floor(progress/10);
-    loaderBar.innerHTML="💖".repeat(heartCount);
-
-    loaderBar.classList.add("loader-pop");
-    setTimeout(()=>loaderBar.classList.remove("loader-pop"),150);
 
     if(progress>=100){
       clearInterval(loadInterval);
@@ -332,13 +302,13 @@ yesBtn.onclick=()=>{
       setTimeout(()=>letter.classList.add("show"),50);
       fireConfetti();
     }
-  },150);
+  },120);
 };
 
 /* NO */
+let noClicks=0;
 noBtn.onclick=()=>{
   noClicks++;
-
   const messages=[
     "wrong button silly 🥺",
     "babi the green one 💚",
@@ -346,26 +316,17 @@ noBtn.onclick=()=>{
     "ISTG RANA",
     "ok fk u press it"
   ];
-
   if(noClicks<=messages.length){
     heading.innerText=messages[noClicks-1];
   }
-
   yesBtn.style.transform=`scale(${1+noClicks*0.2})`;
-
   const shrink=Math.max(0.1,1-noClicks*0.12);
   noBtn.style.transform=`scale(${shrink})`;
-
-  boingSound.currentTime=0;
   boingSound.play();
-
   noBtn.style.position="absolute";
   noBtn.style.top=Math.random()*75+"%";
   noBtn.style.left=Math.random()*80+"%";
-
-  if(noClicks===5){
-    noBtn.style.display="none";
-  }
+  if(noClicks===5){ noBtn.style.display="none"; }
 };
 </script>
 
